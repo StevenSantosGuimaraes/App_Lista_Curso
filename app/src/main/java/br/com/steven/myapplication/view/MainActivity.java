@@ -31,10 +31,12 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor listaVip = preferences.edit();
 
         controller = new PessoaController();
-        controller.toString();
+        pessoa = new Pessoa();
 
-        pessoa = new Pessoa("Steven","Guimarães","Fullstack em Java","(00) 0.0000-0000");
-        System.out.println(pessoa);
+        pessoa.setPrimeiroNome(preferences.getString("primeiroNome",""));
+        pessoa.setSobrenome(preferences.getString("sobrenome",""));
+        pessoa.setCursoDesejado(preferences.getString("cursoDesejado",""));
+        pessoa.setTelefoneContato(preferences.getString("telefoneContato",""));
 
         EditText primeiroPome = findViewById(R.id.editTextPrimeiroNome);
         EditText sobrenome = findViewById(R.id.editTextSobrenome);
@@ -77,6 +79,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
+//    private Pessoa criarPessoaExemplo() {
+//        return new Pessoa("Steven","Guimarães","Fullstack em Java","(00) 0.0000-0000");
+//    }
 
     private static void apagarFormulario(EditText primeiroPome, EditText sobrenome, EditText cursoDesejado, EditText telefoneContato) {
         primeiroPome.setText(null);
