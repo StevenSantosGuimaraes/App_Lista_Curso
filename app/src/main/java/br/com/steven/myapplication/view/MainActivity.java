@@ -1,5 +1,6 @@
 package br.com.steven.myapplication.view;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,6 +14,9 @@ import br.com.steven.myapplication.model.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
 
+    SharedPreferences preferences;
+    public static final String NOME_PREFERENCES = "pref listavip";
+
     PessoaController controller;
 
     Pessoa pessoa;
@@ -22,6 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        preferences = getSharedPreferences(NOME_PREFERENCES, 0);
+        SharedPreferences.Editor listaVip = preferences.edit();
 
         controller = new PessoaController();
         controller.toString();
@@ -49,9 +56,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnSalvar.setOnClickListener(view -> {
+
             Toast.makeText(this, "Dados informados com sucesso.", Toast.LENGTH_SHORT).show();
+
+            listaVip.putString("primeiroNome", pessoa.getPrimeiroNome());
+            listaVip.putString("sobrenome", pessoa.getSobrenome());
+            listaVip.putString("cursoDesejado", pessoa.getCursoDesejado());
+            listaVip.putString("telefoneContato", pessoa.getTelefoneContato());
+            listaVip.apply();
+
             controller.salvar(pessoa);
+
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
+
         });
 
         btnFinalizar.setOnClickListener(view -> {
