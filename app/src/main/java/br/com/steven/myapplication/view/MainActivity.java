@@ -1,6 +1,5 @@
 package br.com.steven.myapplication.view;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,8 +13,6 @@ import br.com.steven.myapplication.model.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
 
-    SharedPreferences preferences;
-    public static final String NOME_PREFERENCES = "pref listavip";
     PessoaController controller;
     Pessoa pessoa;
     private Button btnLimpar;
@@ -25,7 +22,6 @@ public class MainActivity extends AppCompatActivity {
     private EditText sobrenome;
     private EditText cursoDesejado;
     private EditText telefoneContato;
-    private SharedPreferences.Editor listaVip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,23 +29,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        preferences = getSharedPreferences(NOME_PREFERENCES, 0);
-        listaVip = preferences.edit();
-
-        controller = new PessoaController();
+        controller = new PessoaController(MainActivity.this);
         pessoa = new Pessoa();
 
         mapearComponentes();
-        recuperarDadosSharedPreferences();
+        controller.buscar(pessoa);
         exibirDadosRecuperadosNoFormulario();
 
         btnLimpar.setOnClickListener(view -> {
-            limparDadosDoSharedPreferences();
+            controller.apagarDadosDoSharedPreferences();
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
+            Toast.makeText(this, "Formulário e dados anteriores foram apagados com sucesso.", Toast.LENGTH_SHORT).show();
         });
 
         btnSalvar.setOnClickListener(view -> {
-            guardarDadosNoSharedPreferences();
+            pessoa.setPrimeiroNome(primeiroPome.getText().toString());
+            pessoa.setSobrenome(sobrenome.getText().toString());
+            pessoa.setCursoDesejado(cursoDesejado.getText().toString());
+            pessoa.setTelefoneContato(telefoneContato.getText().toString());
+
+            controller.salvar(pessoa);
+            Toast.makeText(this, "Pessoa inserida com sucesso.", Toast.LENGTH_SHORT).show();
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
         });
 
@@ -58,35 +58,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
 
-    }
-
-    private void guardarDadosNoSharedPreferences() {
-        listaVip.putString("primeiroNome", primeiroPome.getText().toString());
-        listaVip.putString("sobrenome", sobrenome.getText().toString());
-        listaVip.putString("cursoDesejado", cursoDesejado.getText().toString());
-        listaVip.putString("telefoneContato", telefoneContato.getText().toString());
-        listaVip.apply();
-        Toast.makeText(this, "Seus dados foram salvo com sucesso.", Toast.LENGTH_SHORT).show();
-        apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
-    }
-
-    private void limparDadosDoSharedPreferences() {
-        listaVip.clear();
-        listaVip.apply();
-    }
-
-    private void exibirDadosRecuperadosNoFormulario() {
-        primeiroPome.setText(pessoa.getPrimeiroNome());
-        sobrenome.setText(pessoa.getSobrenome());
-        cursoDesejado.setText(pessoa.getCursoDesejado());
-        telefoneContato.setText(pessoa.getTelefoneContato());
-    }
-
-    private void recuperarDadosSharedPreferences() {
-        pessoa.setPrimeiroNome(preferences.getString("primeiroNome",""));
-        pessoa.setSobrenome(preferences.getString("sobrenome",""));
-        pessoa.setCursoDesejado(preferences.getString("cursoDesejado",""));
-        pessoa.setTelefoneContato(preferences.getString("telefoneContato",""));
     }
 
     private void mapearComponentes() {
@@ -104,6 +75,15 @@ public class MainActivity extends AppCompatActivity {
         sobrenome.setText(null);
         cursoDesejado.setText(null);
         telefoneContato.setText(null);
+    }
+
+    private void exibirDadosRecuperadosNoFormulario() {
+        if (pessoa != null) {
+            primeiroPome.setText(pessoa.getPrimeiroNome());
+            sobrenome.setText(pessoa.getSobrenome());
+            cursoDesejado.setText(pessoa.getCursoDesejado());
+            telefoneContato.setText(pessoa.getTelefoneContato());
+        }
     }
 
 }
