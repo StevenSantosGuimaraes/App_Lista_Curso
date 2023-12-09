@@ -8,9 +8,12 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import br.com.steven.myapplication.R;
+import br.com.steven.myapplication.controller.PessoaController;
 import br.com.steven.myapplication.model.Pessoa;
 
 public class MainActivity extends AppCompatActivity {
+
+    PessoaController controller;
 
     Pessoa pessoa;
 
@@ -19,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        controller = new PessoaController();
+        controller.toString();
 
         pessoa = new Pessoa("Steven","Guimarães","Fullstack em Java","(00) 0.0000-0000");
         System.out.println(pessoa);
@@ -44,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnSalvar.setOnClickListener(view -> {
             Toast.makeText(this, "Dados informados com sucesso.", Toast.LENGTH_SHORT).show();
+            controller.salvar(pessoa);
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
         });
 
