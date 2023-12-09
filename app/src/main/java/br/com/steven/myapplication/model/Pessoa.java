@@ -7,13 +7,6 @@ public class Pessoa {
     private String cursoDesejado;
     private String telefoneContato;
 
-//    public Pessoa(String primeiroNome, String sobrenome, String cursoDesejado, String telefoneContato) {
-//        this.primeiroNome = primeiroNome;
-//        this.sobrenome = sobrenome;
-//        this.cursoDesejado = cursoDesejado;
-//        this.telefoneContato = telefoneContato;
-//    }
-
     @Override
     public String toString() {
         return primeiroNome + sobrenome;

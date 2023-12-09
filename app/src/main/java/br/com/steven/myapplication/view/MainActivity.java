@@ -16,10 +16,16 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences preferences;
     public static final String NOME_PREFERENCES = "pref listavip";
-
     PessoaController controller;
-
     Pessoa pessoa;
+    private Button btnLimpar;
+    private Button btnSalvar;
+    private Button btnFinalizar;
+    private EditText primeiroPome;
+    private EditText sobrenome;
+    private EditText cursoDesejado;
+    private EditText telefoneContato;
+    private SharedPreferences.Editor listaVip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,49 +34,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         preferences = getSharedPreferences(NOME_PREFERENCES, 0);
-        SharedPreferences.Editor listaVip = preferences.edit();
+        listaVip = preferences.edit();
 
         controller = new PessoaController();
         pessoa = new Pessoa();
 
-        pessoa.setPrimeiroNome(preferences.getString("primeiroNome",""));
-        pessoa.setSobrenome(preferences.getString("sobrenome",""));
-        pessoa.setCursoDesejado(preferences.getString("cursoDesejado",""));
-        pessoa.setTelefoneContato(preferences.getString("telefoneContato",""));
-
-        EditText primeiroPome = findViewById(R.id.editTextPrimeiroNome);
-        EditText sobrenome = findViewById(R.id.editTextSobrenome);
-        EditText cursoDesejado = findViewById(R.id.editTextNomeCursoDesejado);
-        EditText telefoneContato = findViewById(R.id.editTextTelefoneContato);
-
-        Button btnLimpar = findViewById(R.id.btnLimpar);
-        Button btnSalvar = findViewById(R.id.btnSalvar);
-        Button btnFinalizar = findViewById(R.id.btnFinalizar);
-
-        primeiroPome.setText(pessoa.getPrimeiroNome());
-        sobrenome.setText(pessoa.getSobrenome());
-        cursoDesejado.setText(pessoa.getCursoDesejado());
-        telefoneContato.setText(pessoa.getTelefoneContato());
+        mapearComponentes();
+        recuperarDadosSharedPreferences();
+        exibirDadosRecuperadosNoFormulario();
 
         btnLimpar.setOnClickListener(view -> {
-            Toast.makeText(this, "Formulário reiniciado com sucesso.", Toast.LENGTH_SHORT).show();
+            limparDadosDoSharedPreferences();
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
         });
 
         btnSalvar.setOnClickListener(view -> {
-
-            Toast.makeText(this, "Dados informados com sucesso.", Toast.LENGTH_SHORT).show();
-
-            listaVip.putString("primeiroNome", pessoa.getPrimeiroNome());
-            listaVip.putString("sobrenome", pessoa.getSobrenome());
-            listaVip.putString("cursoDesejado", pessoa.getCursoDesejado());
-            listaVip.putString("telefoneContato", pessoa.getTelefoneContato());
-            listaVip.apply();
-
-            controller.salvar(pessoa);
-
+            guardarDadosNoSharedPreferences();
             apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
-
         });
 
         btnFinalizar.setOnClickListener(view -> {
@@ -80,9 +60,44 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    private Pessoa criarPessoaExemplo() {
-//        return new Pessoa("Steven","Guimarães","Fullstack em Java","(00) 0.0000-0000");
-//    }
+    private void guardarDadosNoSharedPreferences() {
+        listaVip.putString("primeiroNome", primeiroPome.getText().toString());
+        listaVip.putString("sobrenome", sobrenome.getText().toString());
+        listaVip.putString("cursoDesejado", cursoDesejado.getText().toString());
+        listaVip.putString("telefoneContato", telefoneContato.getText().toString());
+        listaVip.apply();
+        Toast.makeText(this, "Seus dados foram salvo com sucesso.", Toast.LENGTH_SHORT).show();
+        apagarFormulario(primeiroPome, sobrenome, cursoDesejado, telefoneContato);
+    }
+
+    private void limparDadosDoSharedPreferences() {
+        listaVip.clear();
+        listaVip.apply();
+    }
+
+    private void exibirDadosRecuperadosNoFormulario() {
+        primeiroPome.setText(pessoa.getPrimeiroNome());
+        sobrenome.setText(pessoa.getSobrenome());
+        cursoDesejado.setText(pessoa.getCursoDesejado());
+        telefoneContato.setText(pessoa.getTelefoneContato());
+    }
+
+    private void recuperarDadosSharedPreferences() {
+        pessoa.setPrimeiroNome(preferences.getString("primeiroNome",""));
+        pessoa.setSobrenome(preferences.getString("sobrenome",""));
+        pessoa.setCursoDesejado(preferences.getString("cursoDesejado",""));
+        pessoa.setTelefoneContato(preferences.getString("telefoneContato",""));
+    }
+
+    private void mapearComponentes() {
+        primeiroPome = findViewById(R.id.editTextPrimeiroNome);
+        sobrenome = findViewById(R.id.editTextSobrenome);
+        cursoDesejado = findViewById(R.id.editTextNomeCursoDesejado);
+        telefoneContato = findViewById(R.id.editTextTelefoneContato);
+        btnLimpar = findViewById(R.id.btnLimpar);
+        btnSalvar = findViewById(R.id.btnSalvar);
+        btnFinalizar = findViewById(R.id.btnFinalizar);
+    }
 
     private static void apagarFormulario(EditText primeiroPome, EditText sobrenome, EditText cursoDesejado, EditText telefoneContato) {
         primeiroPome.setText(null);
